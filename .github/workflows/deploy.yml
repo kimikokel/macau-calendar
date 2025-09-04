@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the source code from THIS repository (macau-calendar)
+      # Step 1: Checkout the source code from THIS repository (macau-calendar) 
       - name: Checkout Macau-Calendar Code
         uses: actions/checkout@v3
 
