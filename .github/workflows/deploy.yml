@@ -1,0 +1,41 @@
+name: Deploy Macau Calendar to Production Repo
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the source code from THIS repository (macau-calendar)
+      - name: Checkout Macau-Calendar Code
+        uses: actions/checkout@v3
+
+      # Step 2: Checkout the TARGET deployment repository (kelxd-deploy)
+      - name: Checkout Deployment Repo
+        uses: actions/checkout@v3
+        with:
+          repository: kimikokel/kelxd-deploy
+          token: ${{ secrets.DEPLOY_TOKEN }}
+          path: deploy-repo
+
+      # Step 3: Copy the files from the current directory to the target path
+      - name: Copy Files to /macaucalendar
+        run: |
+          # Delete the old /macaucalendar folder in the deployment repo
+          rm -rf deploy-repo/macaucalendar
+          # Copy all files from the current project (macau-calendar) to the new path
+          cp -r ./ deploy-repo/macaucalendar/
+          # Remove any hidden .git folder if it was copied accidentally
+          rm -rf deploy-repo/macaucalendar/.git
+
+      # Step 4: Commit and push the changes to the deployment repo
+      - name: Commit and Push to Deployment Repo
+        run: |
+          cd deploy-repo
+          git config user.name "GitHub Actions Bot"
+          git config user.email "github-actions-bot@users.noreply.github.com"
+          git add .
+          git commit -m "Deploy macau-calendar from $GITHUB_SHA"
+          git push
